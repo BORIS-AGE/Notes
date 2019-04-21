@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#002657</color>
+    <color name="colorPrimaryDark">#000e57</color>
+    <color name="colorAccent">#1b67d8</color>
+    <color name="searchBar">#cccccc</color>
+    <color name="dateColor">#181818</color>
+    <color name="textPreview">#737373</color>
+    <color name="bottomLineRecycler">#898989</color>
+</resources>

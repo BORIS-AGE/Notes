@@ -47,6 +47,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.date.setText(sdf.format(date));
 
         //setting body
+        if (item.getBody().length() > 30)
         holder.preview.setText(item.getBody().substring(0, 30) + "...");
 
         //setting time

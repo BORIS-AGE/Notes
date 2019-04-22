@@ -3,7 +3,6 @@ package com.example.boris.notes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +17,11 @@ import com.example.boris.notes.models.NoteItem;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import io.reactivex.Observable;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerAdapter recyclerAdapter;
     private List<NoteItem> noteItems;
     private SQLBrains sqlBrains;
+    private CompositeDisposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        disposable = new CompositeDisposable();
         fab = findViewById(R.id.fab);
         recyclerView = findViewById(R.id.recycler);
         noteItems = new ArrayList<>();
@@ -61,7 +67,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getNotes(int index) {
-        noteItems.addAll(sqlBrains.getNotes());
+        disposable.add(
+               Observable.just(sqlBrains.getNotes())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        v -> {
+                            noteItems.addAll(v);
+                        }
+                ));
 
         for (int i = 0; i < 20; i++) {
             noteItems.add(new NoteItem(new Date().getTime(), "dwaaaaaaaaaaaaaaaaaaaaaaaaawdawdawdawdawdawdawdawdawd"));
@@ -86,5 +100,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        disposable.clear();
+        super.onDestroy();
     }
 }

@@ -1,14 +1,19 @@
 package com.example.boris.notes.adapters;
 
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.boris.notes.AddNote;
+import com.example.boris.notes.MainActivity;
 import com.example.boris.notes.R;
 import com.example.boris.notes.models.NoteItem;
 
@@ -18,12 +23,12 @@ import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder> {
 
-    List<NoteItem> noteItems;
-    Context context;
+    private List<NoteItem> noteItems;
+    MainActivity mainActivity;
 
-    public RecyclerAdapter(List<NoteItem> noteItems, Context context) {
+    public RecyclerAdapter(List<NoteItem> noteItems, MainActivity mainActivity) {
         this.noteItems = noteItems;
-        this.context = context;
+        this.mainActivity = mainActivity;
     }
 
     @NonNull
@@ -47,8 +52,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.date.setText(sdf.format(date));
 
         //setting body
-        if (item.getBody().length() > 30)
-        holder.preview.setText(item.getBody().substring(0, 30) + "...");
+        if (item.getBody().length() > 30){
+            holder.preview.setText(item.getBody().substring(0, 30) + "...");
+        }else{
+            holder.preview.setText(item.getBody());
+        }
 
         //setting time
         sdf =  new SimpleDateFormat("HH:mm");//  new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -71,6 +79,21 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             time = itemView.findViewById(R.id.recyclerTime);
             preview = itemView.findViewById(R.id.recyclerPrev);
             button = itemView.findViewById(R.id.recyclerButton);
+
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(mainActivity, AddNote.class);
+                intent.putExtra("date", noteItems.get(getAdapterPosition()).getDate());
+                intent.putExtra("text", noteItems.get(getAdapterPosition()).getBody());
+
+                mainActivity.startActivity(intent);
+                mainActivity.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+            });
         }
+    }
+
+    public void updateList(List<NoteItem> noteItems){
+        this.noteItems = noteItems;
+        notifyDataSetChanged();
     }
 }

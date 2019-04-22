@@ -36,9 +36,11 @@ public class AddNote extends AppCompatActivity {
         sqlBrains = new SQLBrains(getApplicationContext());
         editText = findViewById(R.id.addNoteText);
 
+        //getting old values for editing if they are
         Intent intent = getIntent();
         date = intent.getLongExtra("date", 0);
         oldText = intent.getStringExtra("text") == null ? "" : intent.getStringExtra("text");
+        editText.setText(oldText);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,9 +56,9 @@ public class AddNote extends AppCompatActivity {
     @Override
     protected void onPause() {
         if (save && date == 0){
-            Toast.makeText(getApplicationContext(), "adding note", Toast.LENGTH_LONG).show();
             String str = editText.getText().toString();
             if (validateString(str)){
+                Toast.makeText(getApplicationContext(), "adding note", Toast.LENGTH_LONG).show();
                 Observable.range(1, 1)
                         .subscribeOn(Schedulers.io())
                         .subscribe(
@@ -67,9 +69,9 @@ public class AddNote extends AppCompatActivity {
                         );
             }
         }else{
-            Toast.makeText(getApplicationContext(), "editing note", Toast.LENGTH_LONG).show();
             String str = editText.getText().toString();
-            if (validateString(str)){
+            if (validateString(str) && save){
+                Toast.makeText(getApplicationContext(), "editing note", Toast.LENGTH_LONG).show();
                 Observable.range(1, 1)
                         .subscribeOn(Schedulers.io())
                         .subscribe(
@@ -113,8 +115,8 @@ public class AddNote extends AppCompatActivity {
         if (date != 0){
             SQLBrains brains = new SQLBrains(getApplicationContext());
             brains.delete(date);
+            onBackPressed();
         }
-
     }
 
     private void share() {
@@ -135,7 +137,11 @@ public class AddNote extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "invalid sting", Toast.LENGTH_LONG).show();
             return false;
         }
+        if (str.equals(oldText)){
+            return false;
+        }
 
         return true;
     }
+
 }

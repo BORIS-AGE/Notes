@@ -16,5 +16,6 @@
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"/>
+        android:layout_marginRight="8dp"
+        android:background="@color/mainBackground"/>
 </android.support.constraint.ConstraintLayout>

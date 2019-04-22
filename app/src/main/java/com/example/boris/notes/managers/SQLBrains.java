@@ -62,6 +62,22 @@ public class SQLBrains extends SQLiteOpenHelper {
         return noteItems;
     }
 
+    public List<NoteItem> getNotes(String query){
+        SQLiteDatabase database = this.getReadableDatabase();
+        String[] required = {"body", "date"};
+        Cursor cursor = database.query(tableName,required,"body like '%" + query + "%'",null,null, null,"date");
+
+        List<NoteItem> noteItems = new ArrayList<>();
+        while (cursor.moveToNext()){
+            String body = cursor.getString(cursor.getColumnIndex("body"));
+            long date = cursor.getLong(cursor.getColumnIndex("date"));
+            noteItems.add(new NoteItem(date, body));
+        }
+
+        database.close();
+        return noteItems;
+    }
+
     public void update(NoteItem item){
         SQLiteDatabase database = this.getReadableDatabase();
 

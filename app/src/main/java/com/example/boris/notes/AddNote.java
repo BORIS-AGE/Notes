@@ -30,6 +30,7 @@ public class AddNote extends AppCompatActivity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MyTheme_ActionBarStyle);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
         
@@ -45,6 +46,8 @@ public class AddNote extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        editText.onBeginBatchEdit();
     }
 
     @Override

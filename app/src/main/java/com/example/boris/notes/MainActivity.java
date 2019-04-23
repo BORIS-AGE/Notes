@@ -2,7 +2,10 @@ package com.example.boris.notes;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,9 +13,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.example.boris.notes.adapters.RecyclerAdapter;
@@ -22,6 +29,7 @@ import com.example.boris.notes.models.NoteItem;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import io.reactivex.Observable;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -33,10 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
+    private LinearLayoutManager manager;
     private List<NoteItem> noteItems;
     private SQLBrains sqlBrains;
     private CompositeDisposable disposable;
     private SearchView searchView;
+    private boolean isScrolling = false;
+    private int currentItems, scrollOutItems;
+    public static String order = "DESC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setRecycler() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        manager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(recyclerAdapter);
     }
 
@@ -86,9 +99,34 @@ public class MainActivity extends AppCompatActivity {
                 searchView.setIconified(false);
             }
         });
+
+        //adding new elements on scroll
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true;
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                currentItems = manager.getChildCount();
+                int totalItems = manager.getItemCount();
+                scrollOutItems = manager.findFirstVisibleItemPosition();
+
+                if (isScrolling && (currentItems + scrollOutItems == totalItems)) {
+                    isScrolling = false;
+                    getNotes(totalItems);
+                }
+            }
+        });
+
     }
 
-    private void getNotes(int index) {
+    private void getNotes() {
         disposable.add(
                 Observable.just(sqlBrains.getNotes())
                         .subscribeOn(Schedulers.io())
@@ -100,10 +138,28 @@ public class MainActivity extends AppCompatActivity {
                         ));
     }
 
+    private void getNotes(int offset) {
+        int temp = noteItems.size();
+        disposable.add(
+                Observable.just(sqlBrains.getNotes(offset))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnComplete(() -> {
+                            //recyclerAdapter.removeLoadingFooter();
+                            recyclerAdapter.updateList(noteItems);
+                        })
+                        .subscribe(
+                                v -> {
+                                    //recyclerAdapter.addLoadingFooter();
+                                    noteItems.addAll(v);
+                                }
+                        ));
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.selection_of_order, menu);
         return true;
     }
 
@@ -111,9 +167,17 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_menu) {
-
-            return true;
+        switch (id){
+            case R.id.action_menu_from_new:
+                noteItems.clear();
+                order = "DESC";
+                getNotes(0);
+                return true;
+            case R.id.action_menu_from_old:
+                noteItems.clear();
+                order = "ASC";
+                getNotes(0);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -138,15 +202,15 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String query) {
                 // filter recycler view when text is changed
                 if (!query.trim().equals(""))
-                disposable.add(
-                        Observable.just(sqlBrains.getNotes(query))
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(
-                                        v -> {
-                                            recyclerAdapter.updateList(v);
-                                        }
-                                ));
+                    disposable.add(
+                            Observable.just(sqlBrains.getNotes(query))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                            v -> {
+                                                recyclerAdapter.updateList(v);
+                                            }
+                                    ));
                 else
                     recyclerAdapter.updateList(noteItems);
                 return true;
@@ -158,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         noteItems.clear();
-        getNotes(0);
+        getNotes();
         setRecycler();
     }
 

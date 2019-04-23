@@ -10,11 +10,15 @@
     <include layout="@layout/toolbar"/>
 
     <EditText
+        android:focusedByDefault="true"
+        android:focusable="true"
         android:id="@+id/addNoteText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="Enter your text..."
         android:textAlignment="textStart"
         android:gravity="start"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:textColor="#000"
+        android:maxEms="1000000"/>
 </LinearLayout>

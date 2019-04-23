@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.boris.notes.MainActivity">
+    <item
+        android:id="@+id/action_menu_from_new"
+        android:title="From new to old"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_menu_from_old"
+        android:title="From old to new"
+        app:showAsAction="never" />
+</menu>

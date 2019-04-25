@@ -142,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getNotes(int offset) {
-        int temp = noteItems.size();
         disposable.add(
                 Observable.just(sqlBrains.getNotes(offset))
                         .subscribeOn(Schedulers.io())

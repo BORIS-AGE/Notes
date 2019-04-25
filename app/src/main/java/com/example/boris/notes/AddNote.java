@@ -1,12 +1,15 @@
 package com.example.boris.notes;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -47,7 +50,8 @@ public class AddNote extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        editText.onBeginBatchEdit();
+        editText.requestFocus();
+        ((InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
     @Override
@@ -73,7 +77,7 @@ public class AddNote extends AppCompatActivity {
             }
         }else{
             String str = editText.getText().toString();
-            if (validateString(str) && save){
+            if (validateString(str) && save && !str.equals(oldText)){
                 Toast.makeText(getApplicationContext(), "editing note", Toast.LENGTH_LONG).show();
                 Observable.range(1, 1)
                         .subscribeOn(Schedulers.io())
@@ -85,7 +89,7 @@ public class AddNote extends AppCompatActivity {
                         );
             }
         }
-
+        ((InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         super.onPause();
     }
 
@@ -123,9 +127,10 @@ public class AddNote extends AppCompatActivity {
     }
 
     private void share() {
-
         String str = editText.getText().toString();
         if (validateString(str)){
+            Toast.makeText(getApplicationContext(), "aaaa", Toast.LENGTH_LONG).show();
+
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT, str);
@@ -138,9 +143,6 @@ public class AddNote extends AppCompatActivity {
     private boolean validateString(String str) {
         if (str.trim().equals("")){
             Toast.makeText(getApplicationContext(), "invalid sting", Toast.LENGTH_LONG).show();
-            return false;
-        }
-        if (str.equals(oldText)){
             return false;
         }
 

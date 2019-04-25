@@ -131,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
                 Observable.just(sqlBrains.getNotes())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
+                        .doOnComplete(()->{
+                            setRecycler();
+                        })
                         .subscribe(
                                 v -> {
                                     noteItems.addAll(v);
@@ -223,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         noteItems.clear();
         getNotes();
-        setRecycler();
     }
+
 
 }

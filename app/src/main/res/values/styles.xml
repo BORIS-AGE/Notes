@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="actionOverflowButtonStyle">@style/OverFlow</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -30,5 +32,9 @@
         <item name="android:textColor">#000</item>
     </style>
     <!---->
+    <!--icon with menu-->
+    <style name="OverFlow" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_reorder_black_24dp</item>
+    </style>
     <style name="TitleTextStyle">#fff</style>
 </resources>

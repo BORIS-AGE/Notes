@@ -129,8 +129,6 @@ public class AddNote extends AppCompatActivity {
     private void share() {
         String str = editText.getText().toString();
         if (validateString(str)){
-            Toast.makeText(getApplicationContext(), "aaaa", Toast.LENGTH_LONG).show();
-
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT, str);

@@ -35,7 +35,7 @@ public class SQLBrains extends SQLiteOpenHelper {
         Log.d("database operations", "upgrade created");
     }
 
-    public void addNote(NoteItem item){
+    public void addNote(NoteItem item) {
         SQLiteDatabase database = this.getReadableDatabase();
 
         ContentValues contentValues = new ContentValues();

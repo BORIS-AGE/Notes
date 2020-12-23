@@ -2,11 +2,10 @@ package com.example.boris.notes;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ShareActionProvider;
-import android.support.v7.widget.Toolbar;
-import android.text.InputType;
+import androidx.appcompat.widget.ShareActionProvider;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
@@ -19,7 +18,6 @@ import com.example.boris.notes.models.NoteItem;
 import java.util.Date;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class AddNote extends AppCompatActivity {

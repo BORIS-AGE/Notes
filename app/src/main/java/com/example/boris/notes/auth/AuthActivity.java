@@ -21,6 +21,9 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         presenter = new AuthPresenter(this, getApplicationContext());
+        if (!getSharedPreferences(Constants.PREFERENCES_KEY, MODE_PRIVATE).getString(Constants.USER_ID, "").equals("")){
+            openMainActivity();
+        }
 
         findViewById(R.id.submitButton).setOnClickListener((view) -> {
             presenter.saveValue();
@@ -78,6 +81,7 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
     @Override
     public void openMainActivity() {
         startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
 }

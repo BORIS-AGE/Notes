@@ -1,5 +1,6 @@
 package com.example.boris.notes;
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,9 +17,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.boris.notes.adapters.RecyclerAdapter;
+import com.example.boris.notes.auth.AuthActivity;
 import com.example.boris.notes.managers.SQLBrains;
 import com.example.boris.notes.models.NoteItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -156,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -170,6 +174,14 @@ public class MainActivity extends AppCompatActivity {
                 noteItems.clear();
                 order = "ASC";
                 getNotes(0);
+                return true;
+            case R.id.log_out:
+                SharedPreferences sPref = getSharedPreferences(Constants.PREFERENCES_KEY, MODE_PRIVATE);
+                SharedPreferences.Editor ed = sPref.edit();
+                ed.clear();
+                ed.apply();
+                startActivity(new Intent(this, AuthActivity.class));
+                finish();
                 return true;
         }
 

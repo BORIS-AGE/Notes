@@ -12,4 +12,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="submit">Submit</string>
+    <string name="log_out">Log out</string>
+    <string name="from_old_to_new">From old to new</string>
+    <string name="from_new_to_old">From new to old</string>
 </resources>

@@ -4,11 +4,16 @@
     tools:context="com.example.boris.notes.MainActivity">
     <item
         android:id="@+id/action_menu_from_new"
-        android:title="From new to old"
+        android:title="@string/from_new_to_old"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_menu_from_old"
-        android:title="From old to new"
+        android:title="@string/from_old_to_new"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/log_out"
+        android:title="@string/log_out"
         app:showAsAction="never" />
 </menu>

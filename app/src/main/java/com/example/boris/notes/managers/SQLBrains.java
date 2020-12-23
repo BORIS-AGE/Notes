@@ -6,10 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
+import com.example.boris.notes.Constants;
 import com.example.boris.notes.MainActivity;
 import com.example.boris.notes.models.NoteItem;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +16,18 @@ public class SQLBrains extends SQLiteOpenHelper {
 
     private static final String tableName = "notes";
 
-    public SQLBrains(Context context){
-        super(context, "NAME", null, 2);
+    private final String user_id = "user_id";
+
+    public SQLBrains(Context context) {
+        super(context, "NAME", null, Constants.BD_VERSION);
         Log.d("database operations", "database created");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table IF NOT EXISTS " + tableName + " (body text, date number)");
+        db.execSQL(
+            "create table IF NOT EXISTS " + tableName + " (body text, date number, " + user_id +
+                " text)");
         Log.d("database operations", "table created");
     }
 
@@ -35,25 +38,35 @@ public class SQLBrains extends SQLiteOpenHelper {
         Log.d("database operations", "upgrade created");
     }
 
-    public void addNote(NoteItem item) {
+    public void addNote(NoteItem item, String userId) {
         SQLiteDatabase database = this.getReadableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("body", item.getBody());
         contentValues.put("date", item.getDate());
+        contentValues.put(user_id, userId);
 
         database.insert(tableName, null, contentValues);
 
         database.close();
     }
 
-    public List<NoteItem> getNotes(){
+    public List<NoteItem> getNotes(String userId) {
         SQLiteDatabase database = this.getReadableDatabase();
-        String[] required = {"body", "date"};
-        Cursor cursor = database.query(tableName,required,null,null,null,null,"date " + MainActivity.order, "0, 20");
+        String[] required = { "body", "date" };
+        Cursor cursor = database.query(
+            tableName,
+            required,
+            user_id + " = " + userId,
+            null,
+            null,
+            null,
+            "date " + MainActivity.order,
+            "0, 20"
+        );
 
         List<NoteItem> noteItems = new ArrayList<>();
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             String body = cursor.getString(cursor.getColumnIndex("body"));
             long date = cursor.getLong(cursor.getColumnIndex("date"));
             noteItems.add(new NoteItem(date, body));
@@ -63,13 +76,21 @@ public class SQLBrains extends SQLiteOpenHelper {
         return noteItems;
     }
 
-    public List<NoteItem> getNotes(String query){
+    public List<NoteItem> getNotes(String query, String userId) {
         SQLiteDatabase database = this.getReadableDatabase();
-        String[] required = {"body", "date"};
-        Cursor cursor = database.query(tableName,required,"body like '%" + query + "%'",null,null, null,"date " + MainActivity.order);
+        String[] required = { "body", "date" };
+        Cursor cursor = database.query(
+            tableName,
+            required,
+            "body like '%" + query + "%'" + " AND " + user_id + " = " + userId,
+            null,
+            null,
+            null,
+            "date " + MainActivity.order
+        );
 
         List<NoteItem> noteItems = new ArrayList<>();
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             String body = cursor.getString(cursor.getColumnIndex("body"));
             long date = cursor.getLong(cursor.getColumnIndex("date"));
             noteItems.add(new NoteItem(date, body));
@@ -79,13 +100,22 @@ public class SQLBrains extends SQLiteOpenHelper {
         return noteItems;
     }
 
-    public List<NoteItem> getNotes(int offset){
+    public List<NoteItem> getNotes(int offset, String userId) {
         SQLiteDatabase database = this.getReadableDatabase();
-        String[] required = {"body", "date"};
-        Cursor cursor = database.query(tableName,required,null,null,null,null,"date " + MainActivity.order, offset + ",20");
+        String[] required = { "body", "date" };
+        Cursor cursor = database.query(
+            tableName,
+            required,
+            user_id + " = " + userId,
+            null,
+            null,
+            null,
+            "date " + MainActivity.order,
+            offset + ",20"
+        );
 
         List<NoteItem> noteItems = new ArrayList<>();
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             String body = cursor.getString(cursor.getColumnIndex("body"));
             long date = cursor.getLong(cursor.getColumnIndex("date"));
             noteItems.add(new NoteItem(date, body));
@@ -95,14 +125,19 @@ public class SQLBrains extends SQLiteOpenHelper {
         return noteItems;
     }
 
-    public void update(NoteItem item){
+    public void update(NoteItem item, String userId) {
         SQLiteDatabase database = this.getReadableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("body", item.getBody());
         contentValues.put("date", item.getDate());
 
-        database.update(tableName,contentValues, "date = " + item.getDate(),null);
+        database.update(
+            tableName,
+            contentValues,
+            "date = " + item.getDate() + " AND " + user_id + " = " + userId,
+            null
+        );
         database.close();
     }
 

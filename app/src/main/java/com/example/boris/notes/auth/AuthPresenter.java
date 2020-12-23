@@ -40,6 +40,7 @@ class AuthPresenter {
             Observable.just(sqlBrains.findUser(email, password))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doFinally(viewState::openMainActivity)
                 .subscribe(
                     v -> {
                         String id = sqlBrains.findUser(email, password);

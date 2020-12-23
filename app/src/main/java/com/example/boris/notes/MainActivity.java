@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadText();
+        loadUserId();
         setDefaults();
         setRecycler();
 
@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(recyclerAdapter);
     }
 
-    void loadText() {
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+    void loadUserId() {
+        SharedPreferences sPref = getSharedPreferences(Constants.PREFERENCES_KEY, MODE_PRIVATE);
         userId = sPref.getString(Constants.USER_ID, "");
     }
 
@@ -85,8 +85,7 @@ public class MainActivity extends AppCompatActivity {
         //search view
         searchView = findViewById(R.id.searchMain);
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager
-                .getSearchableInfo(getComponentName()));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setMaxWidth(Integer.MAX_VALUE);
 
         LinearLayout linearLayout = findViewById(R.id.searchBox);
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getNotes() {
         disposable.add(
-            Observable.just(sqlBrains.getNotes())
+            Observable.just(sqlBrains.getNotes(userId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(this::setRecycler)
@@ -135,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getNotes(int offset) {
         disposable.add(
-                Observable.just(sqlBrains.getNotes(offset))
+                Observable.just(sqlBrains.getNotes(offset, userId))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete(() -> {
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 // filter recycler view when text is changed
                 if (!query.trim().equals(""))
                     disposable.add(
-                            Observable.just(sqlBrains.getNotes(query))
+                            Observable.just(sqlBrains.getNotes(query, userId))
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(

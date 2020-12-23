@@ -17,7 +17,6 @@ class StringUtilsJUnit3Test extends TestCase {
         toHexStringData.put("", new byte[0]);
         toHexStringData.put("01020d112d7f", new byte[] { 1, 2, 13, 17, 45, 127 });
         toHexStringData.put("00fff21180", new byte[] { 0, -1, -14, 17, -128 });
-        //...
     }
 
     protected void tearDown() throws Exception {

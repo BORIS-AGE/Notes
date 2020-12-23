@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.example.boris.notes.Constants;
 
 public class AuthSQLBrains extends SQLiteOpenHelper {
 
@@ -19,7 +20,7 @@ public class AuthSQLBrains extends SQLiteOpenHelper {
     private final String id_field = "id";
 
     public AuthSQLBrains(Context context) {
-        super(context, "NAME", null, 4);
+        super(context, "NAME", null, Constants.BD_VERSION);
         Log.d("database operations", "database created");
     }
 
@@ -27,12 +28,14 @@ public class AuthSQLBrains extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table IF NOT EXISTS " + tableName +
             " (" + email_field + " text, " + password_field + " text, " + id_field + " text)");
+        db.execSQL("create table IF NOT EXISTS notes (body text, date number, user_id text)");
         Log.d("database operations", "table created");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("drop table if exists " + tableName);
+        db.execSQL("drop table if exists notes");
         onCreate(db);
         Log.d("database operations", "upgrade created");
     }

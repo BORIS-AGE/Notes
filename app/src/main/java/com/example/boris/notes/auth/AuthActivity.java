@@ -1,14 +1,15 @@
 package com.example.boris.notes.auth;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import com.example.boris.notes.Constants;
+import com.example.boris.notes.MainActivity;
 import com.example.boris.notes.R;
 
 public class AuthActivity extends AppCompatActivity implements AuthView {
@@ -61,7 +62,6 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
         });
     }
 
-
     @Override
     public void showError(final String error) {
         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
@@ -69,10 +69,15 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
 
     @Override
     public void saveIdToPreferences(final String id) {
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences sPref = getSharedPreferences(Constants.PREFERENCES_KEY, MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString(Constants.USER_ID, id);
-        ed.apply();
+        ed.commit();
+    }
+
+    @Override
+    public void openMainActivity() {
+        startActivity(new Intent(this, MainActivity.class));
     }
 
 }

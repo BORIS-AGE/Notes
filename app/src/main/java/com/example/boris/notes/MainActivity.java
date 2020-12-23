@@ -2,36 +2,36 @@ package com.example.boris.notes;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
-
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.boris.notes.adapters.RecyclerAdapter;
 import com.example.boris.notes.managers.SQLBrains;
 import com.example.boris.notes.models.NoteItem;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import io.reactivex.Observable;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
+
+    private String userId;
+
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
     private LinearLayoutManager manager;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        loadText();
         setDefaults();
         setRecycler();
 
@@ -58,13 +58,17 @@ public class MainActivity extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         setSearchConfig(searchView);
-
     }
 
     private void setRecycler() {
         manager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(recyclerAdapter);
+    }
+
+    void loadText() {
+        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        userId = sPref.getString(Constants.USER_ID, "");
     }
 
     private void setDefaults() {
@@ -121,17 +125,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void getNotes() {
         disposable.add(
-                Observable.just(sqlBrains.getNotes())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnComplete(()->{
-                            setRecycler();
-                        })
-                        .subscribe(
-                                v -> {
-                                    noteItems.addAll(v);
-                                }
-                        ));
+            Observable.just(sqlBrains.getNotes())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(this::setRecycler)
+                .subscribe(v -> { noteItems.addAll(v); }
+                ));
     }
 
     private void getNotes(int offset) {

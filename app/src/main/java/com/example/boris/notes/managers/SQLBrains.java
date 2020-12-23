@@ -18,7 +18,7 @@ public class SQLBrains extends SQLiteOpenHelper {
     private static final String tableName = "notes";
 
     public SQLBrains(Context context){
-        super(context, "NAME", null, 1);
+        super(context, "NAME", null, 2);
         Log.d("database operations", "database created");
     }
 

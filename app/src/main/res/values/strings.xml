@@ -3,4 +3,13 @@
     <string name="action_settings">Order</string>
     <string name="shareHint">Share</string>
     <string name="deleteHint">Delete</string>
+    <string name="title_activity_auth">AuthActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="submit">Submit</string>
 </resources>

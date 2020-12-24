@@ -1,6 +1,7 @@
 package com.example.boris.notes.auth;
 
 import android.content.Context;
+import com.example.boris.notes.R;
 import com.example.boris.notes.managers.AuthSQLBrains;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -36,24 +37,29 @@ class AuthPresenter {
     }
 
     void saveValue() {
-        disposable.add(
-            Observable.just(sqlBrains.findUser(email, password))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doFinally(viewState::openMainActivity)
-                .subscribe(
-                    v -> {
-                        String id = sqlBrains.findUser(email, password);
-                        if (id.equals("")) {
-                            disposable.add(Observable.just(sqlBrains.saveUser(email, password))
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(viewState::saveIdToPreferences));
-                        } else {
-                            viewState.saveIdToPreferences(id);
+        if (!email.isEmpty() && !password.isEmpty()) {
+            disposable.add(
+                Observable.just(sqlBrains.findUser(email, password))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doFinally(viewState::openMainActivity)
+                    .subscribe(
+                        v -> {
+                            String id = sqlBrains.findUser(email, password);
+                            if (id.equals("")) {
+                                disposable.add(Observable.just(sqlBrains.saveUser(email, password))
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(viewState::saveIdToPreferences));
+                            } else {
+                                viewState.saveIdToPreferences(id);
+                            }
                         }
-                    }
-                ));
+                    )
+            );
+        } else {
+            viewState.showError(R.string.fields_error_text);
+        }
     }
 
     public enum FieldType {

@@ -8,9 +8,11 @@ import android.text.TextWatcher;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.Toolbar;
 import com.example.boris.notes.Constants;
 import com.example.boris.notes.MainActivity;
 import com.example.boris.notes.R;
+import com.google.android.material.snackbar.Snackbar;
 
 public class AuthActivity extends AppCompatActivity implements AuthView {
 
@@ -18,6 +20,7 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MyTheme_ActionBarStyle);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         presenter = new AuthPresenter(this, getApplicationContext());
@@ -28,6 +31,10 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
         findViewById(R.id.submitButton).setOnClickListener((view) -> {
             presenter.saveValue();
         });
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         AppCompatEditText emailET = findViewById(R.id.emailEditText);
         AppCompatEditText passwordET = findViewById(R.id.passwordEditText);
@@ -82,6 +89,11 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
     public void openMainActivity() {
         startActivity(new Intent(this, MainActivity.class));
         finish();
+    }
+
+    @Override
+    public void showError(final int resId) {
+        Snackbar.make(findViewById(R.id.rootView), getString(resId), Snackbar.LENGTH_LONG).show();
     }
 
 }

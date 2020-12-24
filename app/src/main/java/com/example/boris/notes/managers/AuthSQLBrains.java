@@ -63,7 +63,7 @@ public class AuthSQLBrains extends SQLiteOpenHelper {
         Cursor cursor = database.query(
             tableName,
             required,
-            email_field + " = " + email + " AND " + password_field + " = " + password,
+            email_field + " = '" + email + "' AND " + password_field + " = " + password,
             null,
             null,
             null,

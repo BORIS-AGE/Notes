@@ -1,12 +1,15 @@
 package com.example.boris.notes.auth;
 
 import android.content.Context;
+import android.service.autofill.RegexValidator;
 import com.example.boris.notes.R;
 import com.example.boris.notes.managers.AuthSQLBrains;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class AuthPresenter {
 
@@ -37,7 +40,9 @@ class AuthPresenter {
     }
 
     void saveValue() {
-        if (!email.isEmpty() && !password.isEmpty()) {
+        Pattern pattern = Pattern.compile("[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+");
+        Matcher matcher = pattern.matcher(email);
+        if (matcher.matches() && !password.isEmpty()) {
             disposable.add(
                 Observable.just(sqlBrains.findUser(email, password))
                     .subscribeOn(Schedulers.io())
